@@ -8,7 +8,9 @@
 #include <cstdio>
 #include <cstring>
 #include <boost/shared_ptr.hpp>
+#include <boost/bind.hpp>
 #include "file_info.h"
+#include <thread>
 
 
 void sender(asio::io_service& io, const char* ip_address, unsigned port, const char* filename)
@@ -53,7 +55,7 @@ void sender(asio::io_service& io, const char* ip_address, unsigned port, const c
 	size_t len = total_size;
 	unsigned long long total_bytes_read = 0;
 	while (true) {
-		socket.send(asio::buffer(buffer, len), 0);
+		socket.send(asio::buffer(buffer, len), 0);    // 第一次先发送 文件信息， 文件名称
 		if (feof(fp)) break;
 		len = fread(buffer, 1, k_buffer_size, fp);
 		total_bytes_read += len;
@@ -91,3 +93,94 @@ int main(int args, char* argc[])
 		}
 
 }
+
+
+//using namespace std;
+//using namespace boost;
+//using namespace boost::asio;
+//
+//
+//const int thread_num = 10;
+//
+//int c = 0;
+//
+//boost::asio::io_service ios;
+//
+//mutex io_mu;
+//
+//void func()
+//{
+//	//io_mu.lock();
+//	cout << endl;
+//	cout << "-----"<<c++ << endl;
+//	cout << endl;
+//	//io_mu.unlock();
+//}
+//
+//
+//
+//int main(int args, char* argc[])
+//{
+//	boost::asio::io_service ios;
+//	for (int a = 0; a < 100; ++a)
+//	{
+//		//向任务队列中投递任务，该任务将随机由一个调用run方法的线程执行
+//		ios.post(func);
+//
+//	}
+//	thread *t[thread_num] = { 0 };
+//	// 创建线程池
+//	for (int i = 0; i < thread_num; ++i)
+//	{
+//		
+//		t[i] = new thread(boost::bind(&boost::asio::io_service::run, &ios));
+//	}
+//
+//
+//	for (int a = 0; a < 100; ++a)
+//	{
+//		//向任务队列中投递任务，该任务将随机由一个调用run方法的线程执行
+//		ios.post(func);
+//
+//	}
+//
+//	// 等待线程退出
+//	for (int i = 0; i < thread_num; ++i)
+//	{
+//		t[i]->join();
+//	}
+//
+//
+//
+//
+//	/*
+//	io_service ios[thread_num];
+//	// 轮训投递任务
+//	for (int i = 0; i < 10; ++i)
+//	{
+//		for (int k = 0; k < 10;k++)
+//		{ 
+//			ios[i].post(func);
+//		}
+//		//ios[i].post(func);
+//	}
+//
+//	thread *t[thread_num] = { 0 };
+//	// 创建线程池
+//	for (int i = 0; i < thread_num; ++i)
+//	{
+//		t[i] = new thread(bind(&io_service::run, &ios[i]));
+//	}
+//
+//
+//	// 等待线程退出
+//	for (int i = 0; i < thread_num; ++i)
+//	{
+//		t[i]->join();
+//	}
+//	*/
+//
+//
+//	Sleep(1001);
+//
+//}
